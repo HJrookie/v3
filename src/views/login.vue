@@ -205,6 +205,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   display: flex;
   justify-content: center;
   overflow: auto;
+  --el-component-size: 36px;
 }
 .container {
   width: 900px;
