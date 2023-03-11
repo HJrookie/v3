@@ -1,15 +1,22 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
-// import Layout from "@/views/Layout/index";
+import Layout from "@/views/Layout/index.vue";
 
 const routes: RouteRecordRaw[] = [
   {
     path: "",
-    // redirect: "",
+    redirect: "/index",
     meta: {},
-    // component: () => import("@/views/Layout/index"),
-    component: () => import("@/views/Layout/index.vue"),
-    children: [],
+    component: Layout,
+    // component: () => import("@/views/Layout/index.vue"),
+    children: [
+      {
+        path: "/index",
+        component: () => import("@/views/index.vue"),
+        name: "Index",
+        meta: { title: "首页", icon: "dashboard" },
+      },
+    ],
   },
   {
     path: "/login",

@@ -33,7 +33,7 @@
               autocomplete="off"
               @keyup.enter.native="submitForm(loginFormRef)"
             >
-              <template #prefix> <svg-icon name="password"> </svg-icon> </template>
+              <template #prefix> <svg-icon name="password" color=""> </svg-icon> </template>
             </el-input>
           </el-form-item>
 

@@ -1,55 +1,56 @@
 <template>
-  <svg :class="svgClass" aria-hidden="true">
-    <use :xlink:href="iconName" :fill="color" />
+  <svg aria-hidden="true" class="svg-icon">
+    <use :href="symbolId" :fill="color" />
   </svg>
 </template>
 
 <script>
-import { computed, defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
+  name: "SvgIcon",
   props: {
-    iconClass: {
+    prefix: {
+      type: String,
+      default: "icon",
+    },
+    name: {
       type: String,
       required: true,
     },
-    className: {
-      type: String,
-      default: "",
-    },
     color: {
       type: String,
-      default: "",
+      default: "#333",
     },
   },
   setup(props) {
-    return {
-      iconName: computed(() => `#icon-${props.iconClass}`),
-      svgClass: computed(() => {
-        if (props.className) {
-          return `svg-icon ${props.className}`;
-        }
-        return "svg-icon";
-      }),
-    };
+    const symbolId = computed(() => `#${props.prefix}-${props.name}`);
+    return { symbolId };
   },
 });
 </script>
 
-<style scope lang="scss">
-.sub-el-icon,
-.nav-icon {
-  display: inline-block;
-  font-size: 15px;
-  margin-right: 12px;
-  position: relative;
-}
-
+<style lang="scss">
 .svg-icon {
+  //position: relative;
+  //fill: currentColor;
+  //vertical-align: -2px;
+
+  //vertical-align: middle;
+  //margin-right: 5px;
+  //width: var(--el-menu-icon-width);
+  //text-align: center;
+  //font-size: 18px;
+  line-height: 1;
+
   width: 1em;
   height: 1em;
-  position: relative;
+  vertical-align: -0.15em;
   fill: currentColor;
-  vertical-align: -2px;
+  overflow: hidden;
+  //svg {
+  //  width: 1em;
+  //  height: 1em;
+  //}
 }
 </style>

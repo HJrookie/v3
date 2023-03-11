@@ -8,7 +8,7 @@
 		"serve": "vite preview"
 	},
 	"dependencies": {
-		"@element-plus/icons-vue": "^2.0.9",
+		"@element-plus/icons-vue": "^2.1.0",
 		"axios": "0.24.0",
 		"echarts": "5.3.2",
 		"element-plus": "^2.2.12",
@@ -28,6 +28,7 @@
 		"unplugin-auto-import": "^0.15.1",
 		"unplugin-vue-components": "^0.24.1",
 		"vite": "^4.1.0",
+		"vite-plugin-svg-icons": "^2.0.1",
 		"vue-tsc": "^1.0.24"
 	}
 }

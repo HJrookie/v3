@@ -16,10 +16,11 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": "./",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vite-plugin-svg-icons/client"],
     "paths": {
       "@/*": ["./src/*"]
     },
+
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
