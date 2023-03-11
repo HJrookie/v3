@@ -4,3 +4,7 @@ export function uuid() {
   URL.revokeObjectURL(temp_url);
   return uuid.substr(uuid.lastIndexOf("/") + 1);
 }
+
+export const getInnerType = (value) => {
+  return Object.prototype.toString.call(value).slice(8, -1);
+};

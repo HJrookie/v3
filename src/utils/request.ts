@@ -29,8 +29,10 @@ service.interceptors.request.use(
     if (noToken) {
     } else {
       if (getToken()) {
-        (config?.headers ?? {})["Authorization"] = "Bearer " + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
       }
+      let token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwYXJ0bmVyIiwiYXVkIjoibGVub3ZvZWR1IiwibmJmIjoxNjc4NTI1MjM1LCJpc3MiOiJsZW5vdm9lZHUiLCJleHAiOjE2NzkxMzAwMzUsImlhdCI6MTY3ODUyNTIzNSwiZW1haWwiOiI1NzI2Njc1MjlAcXEuY29tIn0.mgAg9rLFByGOyxMxQQIpEwbKceudJzxN7vR_xoe7u1Q`;
+      // (config?.headers ?? {})["Authorization"] = "Bearer " + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
+      (config?.headers ?? {})["token"] = token; // 让每个请求携带自定义token 请根据实际情况自行修改
     }
 
     return config;

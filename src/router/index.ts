@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from "vue-router";
 
 import Layout from "@/views/Layout/index.vue";
 
 const routes: RouteRecordRaw[] = [
   {
     path: "",
-    redirect: "/index",
+    // redirect: "/index",
     meta: {},
     component: Layout,
     // component: () => import("@/views/Layout/index.vue"),
@@ -15,6 +15,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/views/index.vue"),
         name: "Index",
         meta: { title: "首页", icon: "dashboard" },
+      },
+      {
+        path: "/exams",
+        component: () => import("@/views/exams/index.vue"),
+        name: "Index",
+        meta: { title: "exams", icon: "dashboard" },
       },
     ],
   },
