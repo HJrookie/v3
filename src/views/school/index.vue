@@ -37,14 +37,14 @@
     </el-table>
     <el-row type="flex" justify="end" style="margin-top: 20px">
       <el-pagination
-          :page-sizes="[10, 20, 50, 100]"
-          background
-          layout="prev, pager, next, sizes, total"
-          :current-page="table.page"
-          @update:current-page="handleCur"
-          @update:page-size="handleSizeChange"
-          :page-size="table.pageSize"
-          :total="table.total"
+        :page-sizes="[10, 20, 50, 100]"
+        background
+        layout="prev, pager, next, sizes, total"
+        :current-page="table.page"
+        @update:current-page="handleCur"
+        @update:page-size="handleSizeChange"
+        :page-size="table.pageSize"
+        :total="table.total"
       />
     </el-row>
 
@@ -61,53 +61,40 @@ const instance = getCurrentInstance();
 const schoolNames = ref([]);
 
 // table
-const {
-  form,
-  formRules,
-  table,
-  loading,
-  addNew,
-  resetForm,
-  initTableData,
-  editColumn,
-  submitForm,
-  batchDelete,
-  handleSizeChange,
-  handleCur,
-  handleSelect,
-} = useFormAndTable({
-  instance: instance, // 当前的vue 实例
-  tableInfo: {
-    apiInfo: {
-      getDataApi: getSchoolList,
-      deleteDataApi: deleteSchool,
-      deleteDataFormatter: (v) => v.id,
+const { form, formRules, table, loading, addNew, resetForm, initTableData, editColumn, submitForm, batchDelete, handleSizeChange, handleCur, handleSelect } =
+  useFormAndTable({
+    instance: instance, // 当前的vue 实例
+    tableInfo: {
+      apiInfo: {
+        getDataApi: getSchoolList,
+        deleteDataApi: deleteSchool,
+        deleteDataFormatter: (v) => v.id,
+      },
+      initOnMounted: true,
+      queryFormatter: () => ({ parentId: form.value.schoolName, name: form.value.className }), // 0是学校,1 是班级
     },
-    initOnMounted: true,
-    queryFormatter: () => ({ type: 1, parentId: form.value.schoolName, name: form.value.className }), // 0是学校,1 是班级
-  },
-  addOrUpdateRefName: "addOrUpdateRef",
-  formInfo: {
-    formRefName: "ruleFormRef",
-    fields: [
-      {
-        propName: "schoolName",
-        value: undefined,
-      },
-      {
-        propName: "className",
-        value: undefined,
-      },
-    ],
-  },
-});
+    addOrUpdateRefName: "addOrUpdateRef",
+    formInfo: {
+      formRefName: "ruleFormRef",
+      fields: [
+        {
+          propName: "schoolName",
+          value: undefined,
+        },
+        {
+          propName: "className",
+          value: undefined,
+        },
+      ],
+    },
+  });
 
 onMounted(() => {
-  getSchoolList({ type: 0 })
-      .then((res) => {
-        schoolNames.value = (res?.data ?? []).map((v) => ({ label: v.name, value: v.id }));
-      })
-      .catch((err) => {});
+  getSchoolList({})
+    .then((res) => {
+      schoolNames.value = (res?.data ?? []).map((v) => ({ label: v.name, value: v.id }));
+    })
+    .catch((err) => {});
   // schoolNames.value = []
 });
 

@@ -79,7 +79,7 @@ const { form, formRules, table, loading, addNew, resetForm, initTableData, editC
         deleteDataFormatter: (v) => v.id,
       },
       initOnMounted: true,
-      queryFormatter: () => ({ type: 1, parentId: form.value.schoolName, name: form.value.className }), // 0是学校,1 是班级
+      queryFormatter: () => ({  parentId: form.value.schoolName, name: form.value.className }), // 0是学校,1 是班级
     },
     addOrUpdateRefName: "addOrUpdateRef",
     formInfo: {

@@ -47,7 +47,7 @@ export function useFormAndTable(props) {
         .then((res) => {
           loading.value = false;
           table.value.data = res?.data ?? [];
-          table.value.total = res?.total ?? 0;
+          table.value.total = res?.recordsTotal ?? 0;
         })
         .catch((err) => {
           loading.value = false;

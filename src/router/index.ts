@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from "vue-router";
 
 import Layout from "@/views/Layout/index.vue";
 
@@ -21,6 +21,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/views/exams/index.vue"),
         name: "Index",
         meta: { title: "exams", icon: "dashboard" },
+      },
+      {
+        path: "/codeGen",
+        component: () => import("@/views/codeGen/index.vue"),
+        name: "codeGen",
+        meta: { title: "exams", icon: "dashboard" },
+      },
+      {
+        path: "/examples",
+        component: () => import("@/views/examples/index.vue"),
+        name: "examples",
+        meta: { title: "examples", icon: "dashboard" },
       },
     ],
   },
