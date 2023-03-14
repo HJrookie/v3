@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosInstance} from "axios";
 import { ElMessage } from "element-plus";
 // import store from "@/store";
 import { getToken } from "@/utils/auth";
@@ -12,7 +12,7 @@ let isReloginShow;
 // @ts-ignore
 axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
 // 创建axios实例
-const service = axios.create({
+const service: AxiosInstance = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   // baseURL: process.env.VUE_APP_BASE_API,
   // 超时
@@ -30,7 +30,7 @@ service.interceptors.request.use(
     } else {
       if (getToken()) {
       }
-      let token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwYXJ0bmVyIiwiYXVkIjoibGVub3ZvZWR1IiwibmJmIjoxNjc4NTI1MjM1LCJpc3MiOiJsZW5vdm9lZHUiLCJleHAiOjE2NzkxMzAwMzUsImlhdCI6MTY3ODUyNTIzNSwiZW1haWwiOiI1NzI2Njc1MjlAcXEuY29tIn0.mgAg9rLFByGOyxMxQQIpEwbKceudJzxN7vR_xoe7u1Q`;
+      let token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwYXJ0bmVyIiwiYXVkIjoibGVub3ZvZWR1IiwibmJmIjoxNjc4NzgwODE4LCJpc3MiOiJsZW5vdm9lZHUiLCJleHAiOjE2NzkzODU2MTgsImlhdCI6MTY3ODc4MDgxOCwiZW1haWwiOiIxMDQzMDQ0NDM2QHFxLmNvbSJ9.K7R4AgqSX6pStpqNwRsUwAhc0lwkUvKbAUqBxW_i2gw`;
       // (config?.headers ?? {})["Authorization"] = "Bearer " + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
       (config?.headers ?? {})["token"] = token; // 让每个请求携带自定义token 请根据实际情况自行修改
     }

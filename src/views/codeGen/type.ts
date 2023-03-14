@@ -15,6 +15,8 @@ type InputConfig = {
   placeholder?: string;
   "show-password"?: boolean;
   type?: "text" | "textarea";
+  required?: boolean;
+  trigger?: "change" | "blur";
 };
 
 type InputNumberConfig = {
@@ -30,6 +32,9 @@ type InputNumberConfig = {
   placeholder?: string;
   "show-password"?: boolean;
   type?: "text" | "textarea";
+  trigger?: "change" | "blur";
+
+  required?: boolean;
 };
 
 type SelectConfig = {
@@ -42,6 +47,9 @@ type SelectConfig = {
   filterable?: true;
   disabled?: false;
   multiple?: false;
+  required?: boolean;
+  trigger?: "change" | "blur";
+  optionsKey?: string; // sexOptions
   placeholder?: boolean;
   blankPlaceholder?: boolean;
   options: { label: string; value: any }[];
@@ -53,6 +61,9 @@ type DateConfig = {
   label: string;
   inputType: "date";
   style?: Record<string, any>;
+  required?: boolean;
+  trigger?: "change" | "blur";
+
   clearable?: true;
   filterable?: true;
   disabled?: false;
@@ -77,6 +88,7 @@ export type FormConfig = {
     inline?: true;
     size?: string;
     labelWidth?: string;
+    refName?: string;
   };
   items: FormItem[];
 };

@@ -1,5 +1,5 @@
 import { FormConfig, FormItem } from "@/views/codeGen/type";
-
+import _ from "lodash";
 const formatPlaceholder = (item: FormItem) => {
   if (!item || item.blankPlaceholder) {
     return "";
@@ -17,8 +17,18 @@ const formatPlaceholder = (item: FormItem) => {
   return `${map[item.inputType] ?? ""}${item.label}`;
 };
 
+const renderFormOptions = (data: FormConfig) => {
+  let str = ``;
+  data.items.forEach((item) => {
+    if (item.inputType === "select") {
+      str += `const ${item.optionsKey} = ${JSON.stringify(item.options)}`;
+      console.log(4444444, str);
+    }
+  });
+  return str;
+};
+
 const formatFormItemStr = (item: FormItem) => {
-  console.log(7777777);
   let str = "";
   if (item.inputType === "select") {
     str = `
@@ -26,7 +36,7 @@ const formatFormItemStr = (item: FormItem) => {
      <el-select v-model="form.${item.prop}" placeholder="${formatPlaceholder(item)}" clearable filterable ${item.multiple ? "multiple" : ""} ${
       item.disabled ? ':disbled="item.disabled"' : ""
     } >
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in ${item.optionsKey ?? "options"}" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </el-form-item>
 
@@ -51,10 +61,10 @@ const formatFormItemStr = (item: FormItem) => {
     `;
   } else {
     // date
-    str = `
+    if (item.type?.includes("range")) {
+      str = `
     <el-form-item label="${item.label}" prop="${item.prop}">
-    <el-date-picker
-    clearable
+    <el-date-picker clearable
         v-model="form.${item.prop}"        type="${item.type ?? "date"}"
         range-separator="${item?.["range-separator"] ? item?.["range-separator"] : "-"}"
         start-placeholder="${item?.["start-placeholder"] ? item?.["start-placeholder"] : ""}"
@@ -63,143 +73,150 @@ const formatFormItemStr = (item: FormItem) => {
       />
     </el-form-item>
     `;
+    } else {
+      str = `
+    <el-form-item label="${item.label}" prop="${item.prop}">
+    <el-date-picker
+    clearable
+        v-model="form.${item.prop}"        type="${item.type ?? "date"}"
+        placeholder="${formatPlaceholder(item)}" value-format="${item?.["value-format"] ? item?.["value-format"] : "yyyy-MM-dd"}"
+      />
+    </el-form-item>
+    `;
+    }
   }
   return str;
 };
+
 export const renderStr = (data: FormConfig) => {
-  console.log(543543, data);
+  let formInitialValues = "";
+  let formRules: Record<string, any> = {};
   let formStr = `
-<template>
-<el-form :model="form" ref="form" size="${data?.formConfig?.size ?? "small"}" ${data?.formConfig?.inline ? "inline" : ""} label-width="${
-    data?.formConfig?.labelWidth ?? "75px"
-  }">`;
+  <template>
+    <el-dialog :title="title" width="50%" v-model="visible" >
+
+    <el-form class="form" status-icon :model="form" :rules="rules" ref="${data.formConfig?.refName ?? "formRef"}"   size="${
+    data?.formConfig?.size ?? "default"
+  }" ${data?.formConfig?.inline ? "inline" : ""} label-width="${data?.formConfig?.labelWidth ?? "100px"}">`;
+
+  // 遍历 item 数组
   data.items.forEach((fItem) => {
-    formStr += `\n`;
-    formStr += formatFormItemStr(fItem) + "\n";
+    //1. k,v 字符串
+    formInitialValues += "" + fItem.prop + ":" + fItem.value + ",\n";
+    // 2. 格式化 rules
+    //默认都是 true
+    formRules[fItem.prop] = [
+      {
+        required: fItem?.required ?? true,
+        message: formatPlaceholder(fItem),
+        trigger: fItem?.trigger ?? "change",
+      },
+    ];
+
+    // 3. init optionKey
+    if (fItem.inputType === "select") {
+      if (!fItem.optionsKey) {
+        fItem.optionsKey = fItem.prop + "Options";
+      }
+    }
+
+    // 4. form Item str
+    formStr += formatFormItemStr(fItem);
   });
 
-  let c = `<el-form-item label="角色权限字符串" prop="roleKey">
-        <el-input
-          v-model="queryParams.roleKey"
-          placeholder="请输入角色权限字符串"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="显示顺序" prop="roleSort">
-        <el-input
-          v-model="queryParams.roleSort"
-          placeholder="请输入显示顺序"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="数据范围" prop="dataScope">
-        <el-input
-          v-model="queryParams.dataScope"
-          placeholder="请输入数据范围"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="菜单树选择项是否关联显示" prop="menuCheckStrictly">
-        <el-input
-          v-model="queryParams.menuCheckStrictly"
-          placeholder="请输入菜单树选择项是否关联显示"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="部门树选择项是否关联显示" prop="deptCheckStrictly">
-        <el-input
-          v-model="queryParams.deptCheckStrictly"
-          placeholder="请输入部门树选择项是否关联显示"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="submit">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-    </template>
+  // confirm str
+  formStr += `
+          <el-row type="flex" justify="center">
+            <el-button type="primary"  @click="submitForm(${data.formConfig?.refName ?? "formRef"})">确定</el-button>
+            <el-button   @click="resetForm(${data.formConfig?.refName ?? "formRef"})">取消</el-button>
+         </el-row>
+        </el-form> 
+      </el-dialog>
     `;
 
+  let tableStr = `
+
+    <el-row style="margin-bottom: 20px">
+      <el-button @click="add">add</el-button>
+      <el-button @click="batchDelete(false)" type="danger"> 批量删除 </el-button>
+</el-row>
+
+
+<el-table v-loading="loading" :data="table.data" @selection-change="handleSelect">
+ <el-table-column type="selection" width="55" >  </el-table-column>`;
+
+  data.items.forEach((item) => {
+    tableStr += `
+       <el-table-column prop="${item.prop}" label="${item.label}"  align="center" >  </el-table-column>`;
+  });
+
+  tableStr += `
+<el-table-column prop="ac" label="操作" align="center">
+        <template #default="scope">
+          <el-button type="text" size="small" @click="editColumn(scope.row)">修改</el-button>
+          <el-button type="danger" size="small" @click="batchDelete(true,scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-row type="flex" justify="end" style="margin-top: 20px">
+      <el-pagination
+        :page-sizes="[10, 20, 50, 100]"
+        background
+        layout="prev, pager, next, sizes, total"
+        :current-page="table.page"
+        @update:current-page="handleCur"
+        @update:page-size="handleSizeChange"
+        :page-size="table.pageSize"
+        :total="table.total"
+      />
+    </el-row>
+    </template>
+
+`;
+
   let scriptStr = `
-  
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import type { FormInstance, FormRules } from "element-plus";
 
-const formSize = ref("default");
-const ruleFormRef = ref<FormInstance>();
-const ruleForm = reactive({
-  name: "Hello",
-  region: "",
-  count: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: "",
+import { FormInstance, FormRules,ElMessageBox } from "element-plus";
+import {getExamList,deleteExam} from '@/api/user';
+const formRef = ref<FormInstance>();
+const instance = getCurrentInstance();
+const visible = ref(false)
+const title = ref('')
+
+
+interface User {
+  date: string
+  name: string
+  address: string
+}
+
+let form = reactive({
+  ${formInitialValues}
 });
-
-const rules = reactive<FormRules>({
-  name: [
-    { required: true, message: "Please input Activity name", trigger: "blur" },
-    { min: 3, max: 5, message: "Length should be 3 to 5", trigger: "blur" },
-  ],
-  region: [
-    {
-      required: true,
-      message: "Please select Activity zone",
-      trigger: "change",
-    },
-  ],
-  count: [
-    {
-      required: true,
-      message: "Please select Activity count",
-      trigger: "change",
-    },
-  ],
-  date1: [
-    {
-      type: "date",
-      required: true,
-      message: "Please pick a date",
-      trigger: "change",
-    },
-  ],
-  date2: [
-    {
-      type: "date",
-      required: true,
-      message: "Please pick a time",
-      trigger: "change",
-    },
-  ],
-  type: [
-    {
-      type: "array",
-      required: true,
-      message: "Please select at least one activity type",
-      trigger: "change",
-    },
-  ],
-  resource: [
-    {
-      required: true,
-      message: "Please select activity resource",
-      trigger: "change",
-    },
-  ],
-  desc: [{ required: true, message: "Please input activity form", trigger: "blur" }],
-});
-
+const table = ref<{
+  page:number,
+  pageSize:number,
+  total:number,
+  data:User[],
+  selected:User[],
+}>({
+ page: 1,
+    pageSize: 10,
+    total: 0,
+    data: [],
+    selected: [],
+})
+const loading = ref(false)
+const rules = reactive<FormRules>(
+  ${JSON.stringify(formRules)}
+);
+const handleSelect = (selected:User[])=>{
+    table.value.selected = [...selected];
+}
 const submitForm = async (formEl: FormInstance | undefined) => {
+    console.log(444,form)
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
@@ -210,17 +227,124 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   });
 };
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
+const add = ()=>{
+    visible.value = true;
+}
+
+const resetTable = () => {
+  table.value.page = 1;
+  table.value.pageSize = 10;
+  table.value.total = 0;
+  table.value.data = [];
+  table.value.selected = [];
 };
 
-const options = Array.from({ length: 100 }).map((_, idx) => ({
-  value: idx+1,
-  label: idx+1,
-}));
+const editColumn= (row:User)=>{
+    visible.value = true;
+    nextTick(() => {
+    [...Object.entries(form)].forEach(([k, v]) => {
+      form[k] = row[k];
+    });
+  });
+   // instance?.refs?.addOrUpdateRef?.init(scope.row);
+}
+
+const batchDelete= (onlyOne:boolean, id:number)=>{
+  if(!onlyOne && !table.value.selected.length){
+    return ElMessage({
+              type: "warning",
+              message: "请先选择要删除的行",
+            });
+  }
+  let mesg = onlyOne ? '确认删除该数据' : '确认删除已选择的数据';
+  let data = onlyOne ? {id}: [...table.value.selected]
+   ElMessageBox.confirm(mesg, "Warning", {
+      confirmButtonText: "确认",
+      cancelButtonText: "取消",
+      type: "warning",
+      autofocus: false,
+    })
+      .then(() => {
+        deleteExam(data)
+          .then((res) => {
+            ElMessage({
+              type: "success",
+              message: "删除成功",
+            });
+            resetTable();
+            initTableData();
+          })
+          .catch((err) => {
+            ElMessage({
+              type: "info",
+              message: "删除失败,请重试",
+            });
+            resetTable();
+            initTableData();
+          });
+      })
+      .catch(() => {});
+  
+}
+
+
+  const handleSizeChange = (val:number) => {
+    table.value.pageSize = val;
+    initTableData({
+      pageSize: val,
+    });
+  };
+  const handleCur = (val:number) => {
+    table.value.page = val;
+    initTableData({
+      page: val,
+    });
+  };
+    
+  const initTableData = (data?:Record<string,any>)=>{
+        table.value.selected = [];
+            getExamList({
+        page: table.value.page,
+        pageSize: table.value.pageSize,
+        ...data
+      })
+          .then((res) => {
+            loading.value = false;
+            table.value.data = res?.data ?? [];
+            table.value.total = res?.recordsTotal ?? 0;
+          })
+          .catch((err) => {
+            loading.value = false;
+            table.value.data = [];
+            table.value.total = 0;
+          });
+  }
+
+onMounted(() => {
+  initTableData();
+});
+
+
+
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  visible.value = false;
+  formEl.resetFields();
+  initTableData();
+};
+
+${renderFormOptions(data)}
+
 </script>
   `;
 
-  console.log(9999999, formStr.trim());
+  const styleStr = `
+  <style lang="scss" scoped>
+  .form{
+      --el-component-size: 36px;
+  }
+</style>
+  `;
+
+  return formStr + tableStr.trim() + scriptStr.trim() + styleStr;
 };

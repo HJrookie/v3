@@ -13,7 +13,7 @@
         <el-icon><icon-menu /></el-icon>
         <template #title>Navigator Two</template>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="exams">
         <el-icon><setting /></el-icon>
         <template #title>Navigator Four</template>
       </el-menu-item>

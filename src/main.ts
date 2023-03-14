@@ -4,6 +4,7 @@ import SvgIcon from "@/components/SvgIcon/index.vue"; // svg component
 import "element-plus/dist/index.css";
 import "@/assets/styles/index.scss"; // global css
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+
 import "virtual:svg-icons-register";
 import store from "@/store";
 import router from "./router";

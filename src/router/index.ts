@@ -5,7 +5,7 @@ import Layout from "@/views/Layout/index.vue";
 const routes: RouteRecordRaw[] = [
   {
     path: "",
-    // redirect: "/index",
+    redirect: "/codeGen",
     meta: {},
     component: Layout,
     // component: () => import("@/views/Layout/index.vue"),
@@ -31,6 +31,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/examples",
         component: () => import("@/views/examples/index.vue"),
+        name: "examples",
+        meta: { title: "examples", icon: "dashboard" },
+      },
+      {
+        path: "/test",
+        component: () => import("@/views/codeGen/test.vue"),
         name: "examples",
         meta: { title: "examples", icon: "dashboard" },
       },

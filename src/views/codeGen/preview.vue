@@ -42,7 +42,7 @@
       </template>
 
       <template v-else-if="item.inputType === 'input-textarea'">
-        <el-input v-model="item.value" type="textarea" :placeholder="formatPlaceholder(item)" :style="item.style" />
+        <el-input v-model="item.value" type="textarea" :placeholder="formatPlaceholder(item)" :rows="item.rows" :style="item.style" />
       </template>
     </div>
   </div>
@@ -59,7 +59,6 @@ export default {
     item: {},
   },
   created() {
-
     console.log(this.item);
   },
   data() {
@@ -144,4 +143,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.compass-form {
+}
+</style>
